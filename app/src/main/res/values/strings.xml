@@ -32,4 +32,8 @@
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
 
+
+    <!--A11y strings-->
+    <string name="a11y_fab_add_stock">Add a new Stock .</string>
+
 </resources>

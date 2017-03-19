@@ -21,6 +21,15 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:visibility="gone"
+        tools:text="Error message" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -33,14 +42,6 @@
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:fabSize="normal"
-        app:pressedTranslationZ="12dp" />
-
-    <TextView
-        android:id="@+id/error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:visibility="gone"
-        tools:text="Error message" />
+        app:pressedTranslationZ="12dp"
+        android:contentDescription="@string/a11y_fab_add_stock"/>
 </merge>
