@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ public final class QuoteSyncJob {
             Timber.d(stockCopy.toString());
 
             if (stockArray.length == 0) {
+                Log.d(Utils.TAG, "getQuotes: 000000 ");
                 return;
             }
 
@@ -71,7 +74,7 @@ public final class QuoteSyncJob {
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
-
+                Log.d(Utils.TAG, "Quote Name :  = "+quotes.get(symbol).getName());
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
 
@@ -92,11 +95,14 @@ public final class QuoteSyncJob {
                     historyBuilder.append("\n");
                 }
 
+                String name = quotes.get(symbol).getName();
+
                 ContentValues quoteCV = new ContentValues();
                 quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
                 quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
                 quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
                 quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+                quoteCV.put(Contract.Quote.COLUMN_NAME, name);
 
 
                 quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());

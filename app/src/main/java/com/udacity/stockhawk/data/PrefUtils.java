@@ -1,14 +1,23 @@
 package com.udacity.stockhawk.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.ui.MainActivity;
+import com.udacity.stockhawk.utils.Utils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
 
 public final class PrefUtils {
 
@@ -37,12 +46,37 @@ public final class PrefUtils {
 
     }
 
-    private static void editStockPref(Context context, String symbol, Boolean add) {
+    private static void editStockPref(final Context context, final String symbol, Boolean add) {
         String key = context.getString(R.string.pref_stocks_key);
-        Set<String> stocks = getStocks(context);
+        final Set<String> stocks = getStocks(context);
 
         if (add) {
-            stocks.add(symbol);
+            // TODO : don't add symbol if doesn't exist
+            new AsyncTask<Void, Void, Void>(){
+
+                @Override
+                protected Void doInBackground(Void... params) {
+                    try {
+                        Stock s = YahooFinance.get(symbol);
+                        Log.d(Utils.TAG, "SSSS in background "+s);
+                        if (s != null) {
+                            stocks.add(symbol);
+                        }
+
+                        else {
+                            Log.d(Utils.TAG, "Symbol ("+symbol+") doesn't exist)");
+                        }
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }.execute();
+
+
+
         } else {
             stocks.remove(symbol);
         }

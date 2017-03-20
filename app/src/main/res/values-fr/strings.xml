@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stock Hawk</string>
+    <string name="dialog_add">Ajouter</string>
+    <string name="dialog_cancel">Annuler</string>
+    <string name="dialog_hint">Symbole (ex. GOOG)</string>
+    <string name="dialog_title">"Ajouter une action "</string>
+    <string name="error_no_network">Pas de connectivité réseau! Charge le curseur stock lorsque le réseau est disponible.</string>
+    <string name="error_no_stocks">Aucune action ajoutée ! Cliquez sur le bouton d\'action  pour en ajouter un.</string>
+    <string name="toast_no_connectivity">Rafraîchira lorsque le réseau est disponible.</string>
+    <string name="toast_stock_added_no_connectivity">Symbole %s ajouté. Rafraîchira lorsque le réseau est disponible.</string>
+</resources>

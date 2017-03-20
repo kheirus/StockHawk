@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.utils.Utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -69,7 +70,7 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
         holder.symbol.setText(cursor.getString(Contract.Quote.POSITION_SYMBOL));
         holder.price.setText(dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE)));
-
+        holder.name.setText(cursor.getString(Contract.Quote.POSITION_NAME));
 
         float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
         float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
@@ -118,6 +119,9 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
         @BindView(R.id.change)
         TextView change;
 
+        @BindView(R.id.name)
+        TextView name;
+
         StockViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -130,6 +134,7 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
             cursor.moveToPosition(adapterPosition);
             int symbolColumn = cursor.getColumnIndex(Contract.Quote.COLUMN_SYMBOL);
             clickHandler.onClick(cursor.getString(symbolColumn));
+            Utils.showShortToastMessage(context,cursor.getString(symbolColumn));
 
         }
 
