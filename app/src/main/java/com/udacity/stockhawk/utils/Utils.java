@@ -3,6 +3,9 @@ package com.udacity.stockhawk.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 /**
@@ -39,6 +42,16 @@ public class Utils {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public static void showLongToastHandler(final Context context, final String message){
+        Handler h = new Handler(Looper.getMainLooper());
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                showLongToastMessage(context, message);
+            }
+        });
     }
 
 }

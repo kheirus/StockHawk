@@ -48,35 +48,10 @@ public final class PrefUtils {
 
     private static void editStockPref(final Context context, final String symbol, Boolean add) {
         String key = context.getString(R.string.pref_stocks_key);
-        final Set<String> stocks = getStocks(context);
+        Set<String> stocks = getStocks(context);
 
         if (add) {
-            // TODO : don't add symbol if doesn't exist
-            new AsyncTask<Void, Void, Void>(){
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    try {
-                        Stock s = YahooFinance.get(symbol);
-                        Log.d(Utils.TAG, "SSSS in background "+s);
-                        if (s != null) {
-                            stocks.add(symbol);
-                        }
-
-                        else {
-                            Log.d(Utils.TAG, "Symbol ("+symbol+") doesn't exist)");
-                        }
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            }.execute();
-
-
-
+            stocks.add(symbol);
         } else {
             stocks.remove(symbol);
         }

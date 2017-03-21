@@ -5,8 +5,8 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
 
 
     <LinearLayout
@@ -26,6 +26,8 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:maxLength="25"
+            android:maxLines="1"
             tools:text="Yahoo! Inc."/>
 
 
@@ -55,4 +57,7 @@
             android:paddingEnd="2dp"
             tools:text="100%" />
     </LinearLayout>
+
 </LinearLayout>
+
+

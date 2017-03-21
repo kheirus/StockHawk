@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.udacity.stockhawk.data.Contract;
@@ -39,13 +42,14 @@ public final class QuoteSyncJob {
     private static final int PERIODIC_ID = 1;
     private static final int YEARS_OF_HISTORY = 2;
 
+    private static boolean isValidSymbol;
     private QuoteSyncJob() {
     }
 
-    static void getQuotes(Context context) {
+    static void getQuotes(final Context context) {
 
         Timber.d("Running sync job");
-
+        isValidSymbol = true;
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
         from.add(Calendar.YEAR, -YEARS_OF_HISTORY);
@@ -72,53 +76,67 @@ public final class QuoteSyncJob {
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             while (iterator.hasNext()) {
-                String symbol = iterator.next();
-
-                Log.d(Utils.TAG, "Quote Name :  = "+quotes.get(symbol).getName());
-                Stock stock = quotes.get(symbol);
-                StockQuote quote = stock.getQuote();
-
-                float price = quote.getPrice().floatValue();
-                float change = quote.getChange().floatValue();
-                float percentChange = quote.getChangeInPercent().floatValue();
-
-                // WARNING! Don't request historical data for a stock that doesn't exist!
-                // The request will hang forever X_x
-                List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
-
+                final String symbol = iterator.next();
+                StockQuote quote;
+                Stock stock = null;
+                List<HistoricalQuote> history = null;
+                float price = 0f, change = 0f, percentChange = 0f;
+                String name = null;
                 StringBuilder historyBuilder = new StringBuilder();
 
-                for (HistoricalQuote it : history) {
-                    historyBuilder.append(it.getDate().getTimeInMillis());
-                    historyBuilder.append(", ");
-                    historyBuilder.append(it.getClose());
-                    historyBuilder.append("\n");
+
+                try {
+                    stock = quotes.get(symbol);
+                    quote = stock.getQuote();
+                    price = quote.getPrice().floatValue();
+                    change = quote.getChange().floatValue();
+                    percentChange = quote.getChangeInPercent().floatValue();
+                    name = quotes.get(symbol).getName();
+
+                } catch (NullPointerException npe) {
+                    PrefUtils.removeStock(context, symbol);
+                    isValidSymbol = false;
                 }
+                // WARNING! Don't request historical data for a stock that doesn't exist!
+                // The request will hang forever X_x
 
-                String name = quotes.get(symbol).getName();
+                // TODO BUUUUUUUUG
+                if (isValidSymbol) {
+                    for (HistoricalQuote it : history) {
+                        historyBuilder.append(it.getDate().getTimeInMillis());
+                        historyBuilder.append(", ");
+                        historyBuilder.append(it.getClose());
+                        historyBuilder.append("\n");
+                    }
 
-                ContentValues quoteCV = new ContentValues();
-                quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
-                quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
-                quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
-                quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-                quoteCV.put(Contract.Quote.COLUMN_NAME, name);
+                    ContentValues quoteCV = new ContentValues();
+                    quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
+                    quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
+                    quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
+                    quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+                    quoteCV.put(Contract.Quote.COLUMN_NAME, name);
 
 
-                quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
+                    quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
 
-                quoteCVs.add(quoteCV);
+                    quoteCVs.add(quoteCV);
 
+
+                    context.getContentResolver()
+                            .bulkInsert(
+                                    Contract.Quote.URI,
+                                    quoteCVs.toArray(new ContentValues[quoteCVs.size()]));
+
+                    Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+                    context.sendBroadcast(dataUpdatedIntent);
+
+                } else {
+                    String errorMessage = "Invalid symbol :" + symbol;
+                    Utils.showLongToastHandler(context, errorMessage);
+                    //Utils.showLongToastMessage(context, "symbole2 > " + symbol);
+
+                }
             }
-
-            context.getContentResolver()
-                    .bulkInsert(
-                            Contract.Quote.URI,
-                            quoteCVs.toArray(new ContentValues[quoteCVs.size()]));
-
-            Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-            context.sendBroadcast(dataUpdatedIntent);
-
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");
         }
@@ -173,6 +191,8 @@ public final class QuoteSyncJob {
 
         }
     }
+
+
 
 
 }
