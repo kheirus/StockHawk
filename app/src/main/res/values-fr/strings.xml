@@ -9,4 +9,8 @@
     <string name="error_no_stocks">Aucune action ajoutée ! Cliquez sur le bouton d\'action  pour en ajouter un.</string>
     <string name="toast_no_connectivity">Rafraîchira lorsque le réseau est disponible.</string>
     <string name="toast_stock_added_no_connectivity">Symbole %s ajouté. Rafraîchira lorsque le réseau est disponible.</string>
+    <string name="error_server_invalid">Les informations sur la bourse est indisponible. Veuillez réessayer, si le problème persiste, veuillez nous contacter !</string>
+    <string name="error_empty_stock">Les information sur la bourse est indisponible</string>
+    <string name="error_server_down">Le serveur est temporairement indisponible</string>
+    <string name="error_unknown">Les informations sur la bourse est indisponible</string>
 </resources>

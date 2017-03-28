@@ -33,6 +33,21 @@ public class Utils {
         toast.show();
     }
 
+
+    /**
+     * Show a long toast Message in a detached thread
+     * @param msg : Message to display
+     */
+    public static void showLongToastHandler(final Context context, final String msg){
+        Handler h = new Handler(Looper.getMainLooper());
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                showLongToastMessage(context, msg);
+            }
+        });
+    }
+
     /**
      * Check the network connection
      * @param context : Activity context
@@ -44,14 +59,7 @@ public class Utils {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    public static void showLongToastHandler(final Context context, final String message){
-        Handler h = new Handler(Looper.getMainLooper());
-        h.post(new Runnable() {
-            @Override
-            public void run() {
-                showLongToastMessage(context, message);
-            }
-        });
-    }
+
+
 
 }

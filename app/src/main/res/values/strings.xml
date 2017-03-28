@@ -4,6 +4,7 @@
     <string name="pref_stocks_initialized_key" translatable="false">initialized</string>
 
     <string name="pref_stocks_key" translatable="false">stocks</string>
+    <string name="pref_stock_status_key" translatable="false">stock_status</string>
 
 
     <string name="pref_display_mode_key" translatable="false">displayMode</string>
@@ -28,6 +29,11 @@
 
     <string name="error_no_network" translatable="true">No network connectivity! Will load stock cursor when the network is available.</string>
     <string name="error_no_stocks" translatable="true">No stocks added! Hit the floating action button to add one.</string>
+    <string name="error_empty_stock" translatable="true">Stock information is not available</string>
+    <string name="error_server_down" translatable="true">The server is temporarily unavailable</string>
+    <string name="error_server_invalid" translatable="true">Stock information is not available. Please try again, if the problem persist please contact us!</string>
+    <string name="error_unknown" translatable="true">Stock information is not available</string>
+
 
     <string name="toast_stock_added_no_connectivity" translatable="true">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity" translatable="true">Will refresh when network available.</string>

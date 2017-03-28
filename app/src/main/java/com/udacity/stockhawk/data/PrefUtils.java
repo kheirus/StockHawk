@@ -1,5 +1,6 @@
 package com.udacity.stockhawk.data;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.sync.QuoteSyncJob;
 import com.udacity.stockhawk.ui.MainActivity;
 import com.udacity.stockhawk.utils.Utils;
 
@@ -55,7 +57,7 @@ public final class PrefUtils {
         } else {
             stocks.remove(symbol);
         }
-
+        Log.d(Utils.TAG, "editStockPref: "+"<"+add+"> "+stocks.toString());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(key, stocks);
@@ -67,6 +69,7 @@ public final class PrefUtils {
     }
 
     public static void removeStock(Context context, String symbol) {
+        Log.d(Utils.TAG, "removeStock: "+symbol);
         editStockPref(context, symbol, false);
     }
 
@@ -95,6 +98,29 @@ public final class PrefUtils {
         }
 
         editor.apply();
+    }
+
+    /**
+     * Save stock statuc into shared preferences
+     * @param context context to get PreferenceManager
+     * @param stockStatus status of the stock to set (IntDef type)
+     * */
+    public static void setStockStatus(Context context, @QuoteSyncJob.StockStatus int stockStatus){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(context.getString(R.string.pref_stock_status_key), stockStatus);
+        editor.commit();
+    }
+
+
+    /**
+     * Retrieve stock statuc from shared preferences
+     * @param context context to get PreferenceManager
+     * */
+    @SuppressWarnings("ResourceType")
+    public static @QuoteSyncJob.StockStatus int getStockStatus(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt(context.getString(R.string.pref_stock_status_key), QuoteSyncJob.STOCK_STATUS_UNKNOWN);
     }
 
 }
