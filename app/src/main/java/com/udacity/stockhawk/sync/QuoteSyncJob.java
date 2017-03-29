@@ -66,9 +66,7 @@ public final class QuoteSyncJob {
     static void getQuotes(final Context context) {
 
         Timber.d("Running sync job");
-
-
-
+        String symbol = null;
         try {
 
             Set<String> stockPref = PrefUtils.getStocks(context);
@@ -95,7 +93,7 @@ public final class QuoteSyncJob {
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             while (iterator.hasNext()) {
-                String symbol = iterator.next();
+                symbol = iterator.next();
                 StockQuote quote;
                 Stock stock = quotes.get(symbol);
                 List<HistoricalQuote> history;
@@ -156,7 +154,9 @@ public final class QuoteSyncJob {
 
             }
         } catch (IOException exception) {
-            Timber.e(exception, "Error fetching stock quotes");
+            // TODO some symbol is added but are not valid ex : CAD
+            Timber.e(exception, "Error fetching stock quotes : "+symbol);
+            PrefUtils.removeStock(context, symbol);
             setStockStatus(context, STOCK_STATUS_SERVER_DOWN);
         } catch (Exception unknownException){
             Timber.e(unknownException, "Unknown Error");

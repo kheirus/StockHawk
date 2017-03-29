@@ -44,6 +44,7 @@ public final class PrefUtils {
             editor.apply();
             return defaultStocks;
         }
+        Log.d(Utils.TAG, "getStocks defaults: "+prefs.getStringSet(stocksKey, new HashSet<String>()));
         return prefs.getStringSet(stocksKey, new HashSet<String>());
 
     }

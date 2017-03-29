@@ -1,10 +1,12 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -55,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onClick(String symbol) {
         Timber.d("Symbol clicked: %s", symbol);
+        Utils.showShortToastMessage(this, symbol+" ******");
+        Uri stockUri = Contract.Quote.makeUriForStock(symbol);
+        Intent detailIntent = new Intent(this, DetailActivity.class);
+        detailIntent.setData(stockUri);
+        startActivity(detailIntent);
     }
 
     @Override
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 PrefUtils.removeStock(MainActivity.this, symbol);
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                Log.d(Utils.TAG, "onSwiped: ADAPTER =  "+adapter.getItemCount());
                 Log.d(Utils.TAG, "onSwiped: "+PrefUtils.getStocks(MainActivity.this).size());
                 if (PrefUtils.getStocks(MainActivity.this).size() == 0){
                     updateEmptyView();
@@ -139,38 +147,43 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void updateEmptyView(){
         swipeRefreshLayout.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(false);
+
 
         int  msg ;
-        @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
-        Log.d(Utils.TAG, "updateView: "+status);
-        switch (status){
+        Log.d(Utils.TAG, "updateEmptyView: adapter =  "+adapter.getItemCount());
+        if (adapter.getItemCount()-1 ==0) {
+            @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
+            Log.d(Utils.TAG, "updateView: " + status);
+            switch (status) {
 
-            case QuoteSyncJob.STOCK_STATUS_EMPTY:
-                msg = R.string.error_empty_stock;
-                break;
+                case QuoteSyncJob.STOCK_STATUS_EMPTY:
+                    msg = R.string.error_empty_stock;
+                    break;
 
-            case QuoteSyncJob.STOCK_STATUS_SERVER_DOWN:
-                msg = R.string.error_server_down;
-                break;
+                case QuoteSyncJob.STOCK_STATUS_SERVER_DOWN:
+                    msg = R.string.error_server_down;
+                    break;
 
-            case QuoteSyncJob.STOCK_STATUS_SERVER_INVALID:
-                msg = R.string.error_server_invalid;
-                break;
+                case QuoteSyncJob.STOCK_STATUS_SERVER_INVALID:
+                    msg = R.string.error_server_invalid;
+                    break;
 
-            case QuoteSyncJob.STOCK_STATUS_UNKNOWN:
-                msg = R.string.error_unknown;
-                break;
-            default:
-                msg = R.string.error_empty_stock;
+                case QuoteSyncJob.STOCK_STATUS_UNKNOWN:
+                    msg = R.string.error_unknown;
+                    break;
+                default:
+                    msg = R.string.error_empty_stock;
 
+            }
+
+            if (!networkUp()) msg = R.string.toast_no_connectivity;
+            if (PrefUtils.getStocks(this).size() == 0) msg = R.string.error_no_stocks;
+            error.setText(msg);
+            error.setVisibility(View.VISIBLE);
         }
-
-        if (!networkUp()) msg = R.string.toast_no_connectivity;
-        if (PrefUtils.getStocks(this).size() == 0) msg = R.string.error_no_stocks;
-        error.setText(msg);
-        error.setVisibility(View.VISIBLE);
-
-
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setVisibility(View.VISIBLE);
     }
 
     public void button(@SuppressWarnings("UnusedParameters") View view) {
@@ -182,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             if (networkUp()) {
                 swipeRefreshLayout.setRefreshing(true);
-                swipeRefreshLayout.setVisibility(View.VISIBLE);
             } else {
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -207,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (data.getCount() != 0) {
             error.setVisibility(View.GONE);
         }else {
+            Log.d(Utils.TAG, "onLoadFinished: data.getlenght =  "+data.getCount());
             updateEmptyView();
         }
         adapter.setCursor(data);
@@ -215,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        swipeRefreshLayout.setRefreshing(false);
         adapter.setCursor(null);
         updateEmptyView();
     }
