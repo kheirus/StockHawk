@@ -28,6 +28,7 @@ import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.udacity.stockhawk.utils.Constants;
 import com.udacity.stockhawk.utils.Utils;
 
 import java.io.IOException;
@@ -57,10 +58,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onClick(String symbol) {
         Timber.d("Symbol clicked: %s", symbol);
-        Utils.showShortToastMessage(this, symbol+" ******");
-        Uri stockUri = Contract.Quote.makeUriForStock(symbol);
         Intent detailIntent = new Intent(this, DetailActivity.class);
-        detailIntent.setData(stockUri);
+        detailIntent.putExtra(Constants.EXTRA_SYMBOL,symbol);
         startActivity(detailIntent);
     }
 

@@ -7,6 +7,7 @@
     <color name="material_blue_500">#2196F3</color>
     <color name="material_red_700">#D50000</color>
     <color name="material_green_700">#00C853</color>
-    
+    <color name="chart_color">#BBDEFB</color>
     <color name="yahoo_finance_color">#0a83a5</color>
+    <color name="white">#FFFFFF</color>
 </resources>
