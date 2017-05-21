@@ -3,7 +3,6 @@ package com.udacity.stockhawk.widget;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -11,7 +10,6 @@ import android.widget.RemoteViewsService;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.utils.Constants;
-import com.udacity.stockhawk.utils.Utils;
 
 /**
  * Created by kheirus on 21/05/2017.
@@ -74,9 +72,10 @@ public class QuoteWidgetRemoteViewsService extends RemoteViewsService {
                     views.setTextViewText(R.id.tv_widget_price, "$"+data.getString(data.getColumnIndex(Contract.Quote.COLUMN_PRICE)));
                 }
 
+
                 final Intent fillInIntent = new Intent();
-                fillInIntent.putExtra(Constants.EXTRA_SYMBOL, data.getString(data.getColumnIndex(Contract.Quote.COLUMN_SYMBOL)));
-                views.setOnClickFillInIntent(R.id.widget, fillInIntent);
+                fillInIntent.putExtra(Constants.EXTRA_SYMBOL, data.getString(Contract.Quote.POSITION_SYMBOL));
+                views.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
                 return views;
             }

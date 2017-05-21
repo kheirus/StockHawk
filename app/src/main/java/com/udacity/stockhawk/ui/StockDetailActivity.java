@@ -1,13 +1,15 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -21,11 +23,14 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.utils.Constants;
 import com.udacity.stockhawk.utils.Utils;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,12 +41,10 @@ import au.com.bytecode.opencsv.CSVReader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailActivity extends AppCompatActivity {
+public class StockDetailActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_name)
     TextView tvName;
-    @BindView(R.id.tv_symbol)
-    TextView tvSymbol;
     @BindView(R.id.tv_price_detail)
     TextView tvPrice;
     @BindView(R.id.tv_change_detail)
@@ -49,12 +52,16 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.chart)
     LineChart mChart;
 
+    Context mContext;
+
     private String symbol;
 
-    //Colors
+    //Colors for the graph
     private int axisColor;
     private int chartColor;
 
+    private  DecimalFormat dollarFormatWithPlus;
+    private  DecimalFormat percentageFormat;
 
 
     @Override
@@ -64,35 +71,35 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         symbol = getIntent().getExtras().getString(Constants.EXTRA_SYMBOL);
+        mContext = this;
 
-        updateView();
+        dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+        dollarFormatWithPlus.setPositivePrefix("+$");
+        percentageFormat = (DecimalFormat) NumberFormat.getPercentInstance(Locale.getDefault());
+        percentageFormat.setMaximumFractionDigits(2);
+        percentageFormat.setMinimumFractionDigits(2);
+        percentageFormat.setPositivePrefix("+");
+
         setToolBar(symbol);
 
         axisColor = ContextCompat.getColor(getApplicationContext(),R.color.white);
         chartColor = ContextCompat.getColor(getApplicationContext(),R.color.chart_color);
 
+        // Launch the process that retrieve data and draw the graphic
         new DrawStockAsyncTask().execute(symbol);
 
 
     }
 
-    private void updateView(){
-
-        tvName.setText(symbol);
-        //  tvSymbol.setText(symbol);
-//        tvPrice.setText("21");
-//        tvChange.setText("18");
-    }
-
-
-
-
+    // Set the toolbar
     public void setToolBar(String title) {
         getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+
+    // Set the back button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -130,10 +137,14 @@ public class DetailActivity extends AppCompatActivity {
             drawChart(mData);
         }
 
+        // Draw the graphic of designed symbol
         private void drawChart(Cursor cursor) {
 
             assert cursor != null;
             cursor.moveToFirst();
+
+            // Update the view
+            updateView(cursor);
 
             String symbol = cursor.getString(Contract.Quote.POSITION_SYMBOL);
             String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
@@ -198,6 +209,37 @@ public class DetailActivity extends AppCompatActivity {
             });
 
             mChart.invalidate();
+        }
+
+        // Update other views details about the quote
+        private void updateView(Cursor cursor){
+            assert cursor != null;
+            cursor.moveToFirst();
+
+            String price = cursor.getString(Contract.Quote.POSITION_PRICE);
+            String name = cursor.getString(Contract.Quote.POSITION_NAME);
+            float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
+            float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
+
+
+            if (rawAbsoluteChange > 0) {
+                tvChange.setBackgroundResource(R.drawable.percent_change_pill_green);
+            } else {
+                tvChange.setBackgroundResource(R.drawable.percent_change_pill_red);
+            }
+
+            String changeIcon = dollarFormatWithPlus.format(rawAbsoluteChange);
+            String percentage = percentageFormat.format(percentageChange / 100);
+
+            if (PrefUtils.getDisplayMode(mContext)
+                    .equals(mContext.getString(R.string.pref_display_mode_absolute_key))) {
+                tvChange.setText(changeIcon);
+            } else {
+                tvChange.setText(percentage);
+            }
+
+            tvPrice.setText("$"+price);
+            tvName.setText(name);
         }
     }
 

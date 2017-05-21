@@ -18,6 +18,7 @@ import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.quotes.stock.StockQuote;
 
+// This class is a fix of the Yahoo API issue
 public class MockUtils {
 
     public static String mockHistory =

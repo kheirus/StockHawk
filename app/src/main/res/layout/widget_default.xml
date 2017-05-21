@@ -6,13 +6,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/widget_margin"
+    android:background="#80000000"
     >
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/widget"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </FrameLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stock"
+            android:textStyle="bold"
+            android:textColor="@color/yahoo_finance_color"
+            android:layout_gravity="center"
+            android:textSize="22sp"
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_trending"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hawk"
+            android:textStyle="bold"
+            android:textColor="@color/yahoo_finance_color"
+            android:layout_gravity="center"
+            android:textSize="22sp"
+            />
+    </LinearLayout>
     
     <FrameLayout
         android:layout_width="match_parent"
