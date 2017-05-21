@@ -33,7 +33,7 @@
     <string name="error_server_down" translatable="true">The server is temporarily unavailable</string>
     <string name="error_server_invalid" translatable="true">Stock information is not available. Please try again, if the problem persist please contact us!</string>
     <string name="error_unknown" translatable="true">Stock information is not available</string>
-
+    <string name="error_invalid_symbol" translatable="true">Invalid symbol</string>
 
     <string name="toast_stock_added_no_connectivity" translatable="true">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity" translatable="true">Will refresh when network available.</string>
@@ -41,5 +41,11 @@
 
     <!--A11y strings-->
     <string name="a11y_fab_add_stock" translatable="false">Add a new Stock.</string>
+
+    <!--widget-->
+    <string name="title_widget_quotes">Quotes details</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
 
 </resources>

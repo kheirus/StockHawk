@@ -13,4 +13,5 @@
     <string name="error_empty_stock">Les information sur la bourse est indisponible</string>
     <string name="error_server_down">Le serveur est temporairement indisponible</string>
     <string name="error_unknown">Les informations sur la bourse est indisponible</string>
+    <string name="error_invalid_symbol">Symbole invalide</string>
 </resources>

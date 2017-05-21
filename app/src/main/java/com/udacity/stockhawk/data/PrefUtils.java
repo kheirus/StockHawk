@@ -44,7 +44,7 @@ public final class PrefUtils {
             editor.apply();
             return defaultStocks;
         }
-        Log.d(Utils.TAG, "getStocks defaults: "+prefs.getStringSet(stocksKey, new HashSet<String>()));
+
         return prefs.getStringSet(stocksKey, new HashSet<String>());
 
     }
@@ -58,7 +58,7 @@ public final class PrefUtils {
         } else {
             stocks.remove(symbol);
         }
-        Log.d(Utils.TAG, "editStockPref: "+"<"+add+"> "+stocks.toString());
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(key, stocks);
@@ -70,7 +70,6 @@ public final class PrefUtils {
     }
 
     public static void removeStock(Context context, String symbol) {
-        Log.d(Utils.TAG, "removeStock: "+symbol);
         editStockPref(context, symbol, false);
     }
 

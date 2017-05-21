@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setRefreshing(true);
+
         onRefresh();
 
         QuoteSyncJob.initialize(this);
@@ -93,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
                 PrefUtils.removeStock(MainActivity.this, symbol);
                 getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
-                Log.d(Utils.TAG, "onSwiped: ADAPTER =  "+adapter.getItemCount());
-                Log.d(Utils.TAG, "onSwiped: "+PrefUtils.getStocks(MainActivity.this).size());
+
                 if (PrefUtils.getStocks(MainActivity.this).size() == 0){
                     updateEmptyView();
                 }
@@ -122,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             QuoteSyncJob.syncImmediately(this);
         }
         else {
-            Utils.showLongToastMessage(this, getString(R.string.error_no_network));
+            error.setVisibility(View.VISIBLE);
+            error.setText(getString(R.string.error_no_network));
+            //Utils.showLongToastMessage(this, getString(R.string.error_no_network));
         }
 
 
@@ -148,12 +150,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         swipeRefreshLayout.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
 
-
         int  msg ;
-        Log.d(Utils.TAG, "updateEmptyView: adapter =  "+adapter.getItemCount());
+
         if (adapter.getItemCount()-1 ==0) {
             @QuoteSyncJob.StockStatus int status = PrefUtils.getStockStatus(this);
-            Log.d(Utils.TAG, "updateView: " + status);
+
             switch (status) {
 
                 case QuoteSyncJob.STOCK_STATUS_EMPTY:
@@ -218,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         if (data.getCount() != 0) {
             error.setVisibility(View.GONE);
         }else {
-            Log.d(Utils.TAG, "onLoadFinished: data.getlenght =  "+data.getCount());
             updateEmptyView();
         }
         adapter.setCursor(data);

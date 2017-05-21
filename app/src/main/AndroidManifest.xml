@@ -38,7 +38,26 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <activity android:name=".ui.DetailActivity"></activity>
+        <service
+            android:name="com.udacity.stockhawk.widget.QuoteWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <activity android:name=".ui.DetailActivity" />
+
+        <receiver
+            android:name=".widget.QuoteWidgetProvider"
+            android:enabled="true"
+            android:label="@string/title_widget_quotes">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.udacity.stockhawk.ACTION_DATA_UPDATED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
     </application>
 
 </manifest>

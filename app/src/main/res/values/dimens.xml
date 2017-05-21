@@ -1,3 +1,9 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
+
+    <!--widget dimension-->
+    <dimen name="widget_default_height">180dp</dimen>
+    <dimen name="widget_default_width">180dp</dimen>
+    <dimen name="widget_margin">8dp</dimen>
+
 </resources>

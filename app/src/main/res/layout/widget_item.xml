@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="start|center_vertical">
+
+        <TextView
+            android:id="@+id/tv_widget_symbol"
+            style="@style/StockWidgetSymbolTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            tools:text="YHOO" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/tv_widget_price"
+            style="@style/BidWidgetPriceTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10sp"
+            android:layout_gravity="center"
+            tools:text="1000.00" />
+
+
+        <ImageView
+            android:id="@+id/iv_trending_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_trending_up"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:id="@+id/iv_trending_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_trending_down"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_widget_change_green"-->
+            <!--style="@style/PercentWidgetChangeTextStyle"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/percent_change_pill_green"-->
+            <!--android:paddingEnd="2dp"-->
+            <!--tools:text="100%" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_widget_change_red"-->
+            <!--style="@style/PercentWidgetChangeTextStyle"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/percent_change_pill_red"-->
+            <!--android:paddingEnd="2dp"-->
+            <!--android:visibility="gone"-->
+            <!--tools:text="100%" />-->
+    </LinearLayout>
+
+</LinearLayout>
+
+

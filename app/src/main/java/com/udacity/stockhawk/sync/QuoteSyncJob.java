@@ -11,8 +11,10 @@ import android.net.NetworkInfo;
 import android.support.annotation.IntDef;
 import android.util.Log;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.mock.MockUtils;
 import com.udacity.stockhawk.utils.Utils;
 
 import java.io.IOException;
@@ -110,8 +112,7 @@ public final class QuoteSyncJob {
                     name = quotes.get(symbol).getName();
 
                 } catch (NullPointerException npe) {
-                    Log.d(Utils.TAG, "NullPointerException");
-                    String errorMsg = "Symbol \""+symbol+"\" is invalid";
+                    String errorMsg = context.getString(R.string.error_invalid_symbol)+": "+symbol;
                     Utils.showLongToastHandler(context, errorMsg);
                     PrefUtils.removeStock(context, symbol);
                     validSymbol = false;
@@ -122,7 +123,16 @@ public final class QuoteSyncJob {
                 Calendar from = Calendar.getInstance();
                 Calendar to = Calendar.getInstance();
                 from.add(Calendar.YEAR, -YEARS_OF_HISTORY);
-                history = stock.getHistory(from, to, Interval.WEEKLY);
+
+                //history = stock.getHistory(from, to, Interval.WEEKLY);
+
+                // Note for reviewer:
+                // Due to problems with Yahoo API we have commented the line above
+                // and included this one to fetch the history from MockUtils
+                // This should be enough as to develop and review while the API is down
+                history = MockUtils.getHistory();
+
+
 
                 for (HistoricalQuote it : history) {
                     historyBuilder.append(it.getDate().getTimeInMillis());
@@ -186,7 +196,6 @@ public final class QuoteSyncJob {
 
         schedulePeriodic(context);
         syncImmediately(context);
-
     }
 
     public static synchronized void syncImmediately(Context context) {

@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
-import com.udacity.stockhawk.utils.Utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -57,7 +56,7 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
     @Override
     public StockViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View item = LayoutInflater.from(context).inflate(R.layout.list_item_quote, parent, false);
+        View item = LayoutInflater.from(context).inflate(R.layout.quote_item, parent, false);
 
         return new StockViewHolder(item);
     }
@@ -110,16 +109,16 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
     class StockViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.symbol)
+        @BindView(R.id.tv_symbol)
         TextView symbol;
 
-        @BindView(R.id.price)
+        @BindView(R.id.tv_price)
         TextView price;
 
-        @BindView(R.id.change)
+        @BindView(R.id.tv_change)
         TextView change;
 
-        @BindView(R.id.name)
+        @BindView(R.id.tv_name)
         TextView name;
 
         StockViewHolder(View itemView) {

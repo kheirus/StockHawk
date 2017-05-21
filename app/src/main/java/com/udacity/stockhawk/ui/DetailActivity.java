@@ -2,22 +2,17 @@ package com.udacity.stockhawk.ui;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.net.Uri;
-import android.support.v4.app.LoaderManager;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -61,6 +56,7 @@ public class DetailActivity extends AppCompatActivity {
     private int chartColor;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +70,8 @@ public class DetailActivity extends AppCompatActivity {
 
         axisColor = ContextCompat.getColor(getApplicationContext(),R.color.white);
         chartColor = ContextCompat.getColor(getApplicationContext(),R.color.chart_color);
-        drawStockChart(symbol);
+
+        new DrawStockAsyncTask().execute(symbol);
 
 
     }
@@ -88,71 +85,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
-    private void drawStockChart(String symbole) {
-        ContentResolver contentResolver = getApplicationContext().getContentResolver();
-        Cursor cursor = contentResolver.query(Contract.Quote.makeUriForStock(symbole),
-                null,
-                null,
-                null,
-                Contract.Quote.COLUMN_SYMBOL
-        );
-        assert cursor != null;
-        cursor.moveToFirst();
-        String symbol = cursor.getString(cursor.getColumnIndex(Contract.Quote.COLUMN_SYMBOL));
-        String history = cursor.getString(cursor.getColumnIndex(Contract.Quote.COLUMN_HISTORY));
-        List<Entry> entries = new ArrayList<>();
-        CSVReader reader = new CSVReader(new StringReader(history));
-        String[] nextLine;
-        final List<Long> xAxisValues = new ArrayList<>();
-        int xAxisPosition = 0;
-        cursor.close();
-
-        try {
-            while ((nextLine = reader.readNext()) != null) {
-                xAxisValues.add(Long.valueOf(nextLine[0]));
-                Entry entry = new Entry(
-                        xAxisPosition, // timestamp
-                        Float.valueOf(nextLine[1])  // symbol value
-                );
-                entries.add(entry);
-                xAxisPosition++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //style
-        LineDataSet dataSet = new LineDataSet(entries, symbol);
-        dataSet.setColors(chartColor);
-        dataSet.setDrawCircles(false);
-        //dataSet.setCircleColor(chartColor);
-
-        LineData lineData = new LineData(dataSet);
-        mChart.fitScreen();
-        mChart.setClickable(false);
-        mChart.setData(lineData);
-        mChart.setDescription(null);
-        mChart.getLegend().setTextColor(chartColor);
-
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setTextColor(axisColor);
-        YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setTextColor(axisColor);
-
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setTextColor(axisColor);
-        //style fin
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                Date date = new Date(xAxisValues.get(xAxisValues.size() - (int) value - 1));
-                return new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH)
-                        .format(date);
-            }
-        });
-
-        mChart.invalidate();
-    }
 
 
     public void setToolBar(String title) {
@@ -169,6 +101,104 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    // AsyncTask that retrieve data and draw chart in a separate thread
+    class DrawStockAsyncTask extends AsyncTask<String, Void, Cursor>{
+
+
+        @Override
+        protected Cursor doInBackground(String... strings) {
+            String symbol = strings[0];
+
+            ContentResolver contentResolver = getApplicationContext().getContentResolver();
+            Cursor cursor = contentResolver.query(Contract.Quote.makeUriForStock(symbol),
+                    null,
+                    null,
+                    null,
+                    Contract.Quote.COLUMN_SYMBOL
+            );
+            return cursor;
+        }
+
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
+
+            Cursor mData = cursor;
+            drawChart(mData);
+        }
+
+        private void drawChart(Cursor cursor) {
+
+            assert cursor != null;
+            cursor.moveToFirst();
+
+            String symbol = cursor.getString(Contract.Quote.POSITION_SYMBOL);
+            String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
+
+            List<Entry> entries = new ArrayList<>();
+
+            CSVReader reader = new CSVReader(new StringReader(history));
+            String[] nextLine;
+            final List<Long> xAxisValues = new ArrayList<>();
+            int xAxisPosition = 0;
+
+
+            cursor.close();
+
+            try {
+                while ((nextLine = reader.readNext()) != null) {
+                    xAxisValues.add(Long.valueOf(nextLine[0]));
+                    Entry entry = new Entry(
+                            xAxisPosition, // timestamp
+                            Float.valueOf(nextLine[1])  // symbol value
+                    );
+                    entries.add(entry);
+                    xAxisPosition++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //style
+            LineDataSet dataSet = new LineDataSet(entries, symbol);
+            dataSet.setColors(chartColor);
+            dataSet.setDrawCircles(false);
+            dataSet.setLineWidth(2f);
+            //dataSet.setCircleColor(chartColor);
+
+            LineData lineData = new LineData(dataSet);
+            mChart.fitScreen();
+            mChart.setClickable(false);
+            mChart.setData(lineData);
+            mChart.setDescription(null);
+            mChart.getLegend().setTextColor(chartColor);
+
+
+            //mChart.getDescription().setTextColor(chartColor);
+            mChart.animateX(2000, Easing.EasingOption.Linear);
+
+            YAxis leftAxis = mChart.getAxisLeft();
+            leftAxis.setTextColor(axisColor);
+            YAxis rightAxis = mChart.getAxisRight();
+            rightAxis.setTextColor(axisColor);
+
+            XAxis xAxis = mChart.getXAxis();
+            xAxis.setTextColor(axisColor);
+            //style fin
+            xAxis.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+                    Date date = new Date(xAxisValues.get(xAxisValues.size() - (int) value - 1));
+                    return new SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH)
+                            .format(date);
+                }
+            });
+
+            mChart.invalidate();
+        }
     }
 
 }
